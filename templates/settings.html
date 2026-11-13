@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParcelMate - Settings</title>
+    <link rel="icon"
+          type="image/png"
+          href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <link rel="manifest"
+       href="{{ url_for('static', filename='manifest.json') }}">
+
+    <meta name="theme-color" content="#2563eb">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Settings Header -->
+    <header class="main-header">
+        <div class="header-content">
+
+            <div class="brand">
+                <h1>📦 ParcelMate</h1>
+                <p>Manage your preferences</p>
+            </div>
+
+            <a href="/" class="settings-button">
+                ← Back to Dashboard
+            </a>
+
+        </div>
+    </header>
+
+    <main class="settings-page">
+
+        <h2>⚙️ Settings</h2>
+        <p>Customize your ParcelMate experience.</p>
+
+
+        <!-- Appearance -->
+        <div class="theme-settings">
+            <h3>🎨 Appearance</h3>
+
+            <label for="themeSelect">Choose Theme:</label>
+
+            <select id="themeSelect">
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+            </select>
+        </div>
+
+
+        <!-- App Installation -->
+        <div class="app-settings">
+            <h3>📱 ParcelMate App</h3>
+
+            <p>Install ParcelMate on your device for quick access.</p>
+
+            <button type="button" id="installAppButton" hidden>
+                Install ParcelMate
+            </button>
+
+            <p id="installMessage">
+                App installation will be available when supported by your browser.
+            </p>
+        </div>
+
+
+        <!-- User Profile -->
+        <section class="profile-section">
+
+            <h3>👤 User Profile</h3>
+
+            <label for="profileName">Full Name:</label>
+            <input type="text"
+                   id="profileName"
+                   placeholder="Enter your name">
+
+            <label for="profileEmail">Email:</label>
+            <input type="email"
+                   id="profileEmail"
+                   placeholder="Enter your email">
+
+            <label for="profilePhone">Phone Number:</label>
+            <input type="tel"
+                   id="profilePhone"
+                   placeholder="Enter your phone number">
+
+
+            <!-- Notification Preferences -->
+            <div class="notification-settings">
+
+                <div class="notification-heading">
+                    <div class="notification-icon">🔔</div>
+
+                    <div>
+                        <h3>Notification Preferences</h3>
+                        <p>Manage your parcel delivery alerts</p>
+                    </div>
+                </div>
+
+                <div class="notification-option">
+
+                    <div class="notification-text">
+                        <strong>Delivery Notifications</strong>
+                        <span>Get alerts about your upcoming deliveries.</span>
+                    </div>
+
+                    <label class="notification-switch">
+                        <input
+                            type="checkbox"
+                            id="notificationPreference"
+                            checked
+                        >
+                        <span class="switch-slider"></span>
+                    </label>
+
+                </div>
+
+                <p id="notificationStatus" class="notification-status">
+                    Notifications are ON
+                </p>
+
+                <p class="notification-note">
+                    Stay updated and never miss a delivery!
+                </p>
+
+            </div>
+
+
+            <button type="button" onclick="saveProfile()">
+                Save Profile
+            </button>
+
+            <p id="profileMessage"></p>
+
+        </section>
+
+
+        <!-- Privacy -->
+        <div class="privacy-settings">
+            <h3>🔒 Privacy & Security</h3>
+
+            <p>
+                Learn how ParcelMate handles your personal
+                and delivery information.
+            </p>
+
+            <button type="button" onclick="showPrivacyPolicy()">
+                View Privacy Policy
+            </button>
+        </div>
+
+
+        <!-- Privacy Popup -->
+        <div id="privacyModal" class="privacy-modal">
+
+            <div class="privacy-content">
+
+                <button type="button"
+                        class="close-privacy"
+                        onclick="closePrivacyPolicy()">
+                    ✖
+                </button>
+
+                <h2>🔒 ParcelMate Privacy Policy</h2>
+
+                <h3>1. Information We Handle</h3>
+                <p>
+                    ParcelMate may handle parcel details such as
+                    tracking ID, courier name, delivery date,
+                    delivery address and parcel status.
+                </p>
+
+                <h3>2. How Information Is Used</h3>
+                <p>
+                    This information helps users manage their
+                    deliveries in one place.
+                </p>
+
+                <h3>3. Data Security</h3>
+                <p>
+                    We aim to protect user information and
+                    prevent unauthorized access.
+                </p>
+
+                <h3>4. User Responsibility</h3>
+                <p>
+                    Users should provide accurate information
+                    and avoid sharing sensitive details unnecessarily.
+                </p>
+
+                <h3>5. Contact</h3>
+                <p>
+                    For privacy-related questions, contact
+                    the ParcelMate team.
+                </p>
+
+            </div>
+        </div>
+
+    </main>
+
+
+    <!-- Theme and Privacy JavaScript -->
+    
+<script>
+    const themeSelect = document.getElementById("themeSelect");
+
+    function applyTheme(theme) {
+        document.body.classList.toggle(
+            "dark-theme",
+            theme === "dark"
+        );
+    }
+
+    const savedTheme =
+        localStorage.getItem("parcelMateTheme") || "light";
+
+    themeSelect.value = savedTheme;
+    applyTheme(savedTheme);
+
+    themeSelect.addEventListener("change", function () {
+        const selectedTheme = themeSelect.value;
+
+        localStorage.setItem("parcelMateTheme", selectedTheme);
+        applyTheme(selectedTheme);
+    });
+
+    function showPrivacyPolicy() {
+        document.getElementById("privacyModal").style.display = "flex";
+    }
+
+    function closePrivacyPolicy() {
+        document.getElementById("privacyModal").style.display = "none";
+    }
+
+    document.getElementById("privacyModal").addEventListener(
+        "click",
+        function (event) {
+            if (event.target === this) {
+                closePrivacyPolicy();
+            }
+        }
+    );
+</script>
+
+<!-- Settings Page JavaScript -->
+<script src="{{ url_for('static', filename='settings.js') }}"></script>
+
+<!-- ParcelMate PWA JavaScript -->
+<script src="{{ url_for('static', filename='pwa.js') }}"></script>
+
+</body>
+</html>

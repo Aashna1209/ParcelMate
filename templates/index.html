@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ParcelMate - Parcel Dashboard</title>
+    <link rel="icon"
+          type="image/png"
+          href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <link rel="manifest"
+      href="{{ url_for('static', filename='manifest.json') }}">
+
+    <meta name="theme-color" content="#2563eb">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+
+        <div class="header-content">
+
+            <div class="brand">
+                <h1>📦 ParcelMate</h1>
+                <p>Manage all your deliveries in one place</p>
+            </div>
+
+            <a href="{{ url_for('settings') }}" class="settings-button">
+                ⚙️ Settings
+            </a>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <!-- Main Action Buttons -->
+        <section class="main-actions">
+
+            <button type="button" onclick="showParcelForm()">
+                + Add Parcel
+            </button>
+
+            <button type="button" onclick="enableNotifications()">
+                🔔 Enable Notifications
+            </button>
+
+        </section>
+
+
+        <!-- Add / Edit Parcel Form -->
+        <section id="parcelForm" style="display: none;">
+
+            <h2>Parcel Details</h2>
+
+            <form id="parcelFormDetails" method="POST" action="/add-parcel">
+
+                <label for="trackingId">Tracking ID:</label>
+
+                <input
+                    type="text"
+                    id="trackingId"
+                    name="tracking_id"
+                    required
+                    minlength="3"
+                    maxlength="50"
+                    placeholder="Enter Tracking ID"
+                >
+
+                <label for="courierName">Courier Name:</label>
+
+                <input
+                    type="text"
+                    id="courierName"
+                    name="courier_name"
+                    required
+                    minlength="2"
+                    maxlength="50"
+                    placeholder="Enter Courier Name"
+                >
+
+                <label for="deliveryDate">Expected Delivery Date:</label>
+
+                <input
+                    type="date"
+                    id="deliveryDate"
+                    name="delivery_date"
+                    required
+                >
+
+                <label for="deliveryAddress">Delivery Address:</label>
+
+                <input
+                    type="text"
+                    id="deliveryAddress"
+                    name="address"
+                    required
+                    minlength="5"
+                    maxlength="200"
+                    placeholder="Enter Delivery Address"
+                >
+
+                <label for="parcelStatus">Parcel Status:</label>
+
+                <select id="parcelStatus" name="parcel_status" required>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+
+                <button type="submit" id="submitButton">
+                    Save Parcel
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- Dashboard Statistics -->
+        <section class="dashboard">
+
+            <div class="dashboard-card total-card"
+                 onclick="showAllParcels()"
+                 title="Click to view all parcels">
+
+                <div class="card-icon">📦</div>
+                <h3>Total Parcels</h3>
+                <p id="totalParcels">0</p>
+                <span>All your parcels</span>
+
+            </div>
+
+
+            <div class="dashboard-card upcoming-card"
+                 onclick="showUpcomingDeliveries()"
+                 title="Click to view upcoming deliveries">
+
+                <div class="card-icon">📅</div>
+                <h3>Upcoming Deliveries</h3>
+                <p id="upcomingDeliveries">0</p>
+                <span>Expected soon</span>
+
+            </div>
+
+
+            <div class="dashboard-card transit-card"
+                 onclick="filterParcelsByStatus('In Transit')"
+                 title="Click to view parcels in transit">
+
+                <div class="card-icon">🚚</div>
+                <h3>In Transit</h3>
+                <p id="inTransitCount">0</p>
+                <span>On the way</span>
+
+            </div>
+
+
+            <div class="dashboard-card delivery-card"
+                 onclick="filterParcelsByStatus('Out for Delivery')"
+                 title="Click to view parcels out for delivery">
+
+                <div class="card-icon">📦</div>
+                <h3>Out for Delivery</h3>
+                <p id="outForDeliveryCount">0</p>
+                <span>Arriving soon</span>
+
+            </div>
+
+
+            <div class="dashboard-card delivered-card"
+                 onclick="filterParcelsByStatus('Delivered')"
+                 title="Click to view delivered parcels">
+
+                <div class="card-icon">✅</div>
+                <h3>Delivered</h3>
+                <p id="deliveredCount">0</p>
+                <span>Successfully delivered</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- Overdue Delivery Alert -->
+        <section id="overdueAlert"
+                 class="overdue-alert"
+                 style="display: none;">
+
+            <h3>⚠️ Overdue Deliveries</h3>
+            <p id="overdueMessage"></p>
+
+        </section>
+
+
+        <!-- Vacation Mode -->
+        <section class="vacation-section">
+
+            <h2>🏖️ Vacation Mode</h2>
+
+            <p>Manage your parcel preferences while you are away.</p>
+
+            <label>
+                <input type="checkbox" id="vacationToggle">
+                Enable Vacation Mode
+            </label>
+
+            <div id="vacationDetails" style="display: none;">
+
+                <label for="vacationStart">Departure Date:</label>
+                <input type="date" id="vacationStart">
+
+                <label for="vacationEnd">Return Date:</label>
+                <input type="date" id="vacationEnd">
+
+                <label for="vacationInstruction">
+                    Delivery Instructions:
+                </label>
+
+                <textarea
+                    id="vacationInstruction"
+                    placeholder="Example: Please contact me before delivery."
+                ></textarea>
+
+                <button type="button" onclick="saveVacationSettings()">
+                    Save Vacation Settings
+                </button>
+
+            </div>
+
+            <p id="vacationMessage"></p>
+
+        </section>
+
+
+        <!-- Search, Filter and Sort -->
+        <section class="parcel-controls">
+
+            <input
+                type="text"
+                id="parcelSearch"
+                placeholder="Search by Tracking ID or Courier"
+            >
+
+            <label for="parcelFilter">Filter by Status:</label>
+
+            <select id="parcelFilter">
+                <option value="all">All</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+            </select>
+
+            <label for="parcelSort">Sort by Date:</label>
+
+            <select id="parcelSort">
+                <option value="earliest">Earliest First</option>
+                <option value="latest">Latest First</option>
+            </select>
+
+            <button type="button" onclick="exportParcels()">
+                Export CSV
+            </button>
+
+        </section>
+
+
+        <!-- Parcel List -->
+        <section class="parcel-list-section">
+
+            <h2>My Parcels</h2>
+
+            <div id="parcelList"></div>
+
+        </section>
+
+
+        <!-- Parcel Details Popup -->
+        <div id="detailsModal" class="details-modal">
+
+            <div class="details-content">
+
+                <span class="close-modal" onclick="closeDetails()">×</span>
+
+                <h2>Parcel Details</h2>
+
+                <p>
+                    <strong>Tracking ID:</strong>
+                    <span id="detailTrackingId"></span>
+                </p>
+
+                <p>
+                    <strong>Courier:</strong>
+                    <span id="detailCourier"></span>
+                </p>
+
+                <p>
+                    <strong>Delivery Date:</strong>
+                    <span id="detailDate"></span>
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    <span id="detailAddress"></span>
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    <span id="detailStatus"></span>
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- Database data from Flask -->
+    <script>
+        const databaseParcels = {{ parcels | tojson }};
+    </script>
+
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='pwa.js') }}"></script>
+</body>
+</html>
