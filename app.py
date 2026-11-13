@@ -21,6 +21,13 @@ if database_url:
             1
         )
 
+    if database_url.startswith("postgresql://"):
+    database_url = database_url.replace(
+        "postgresql://",
+        "postgresql+psycopg2://",
+        1
+    )
+
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
 else:
