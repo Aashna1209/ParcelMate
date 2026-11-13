@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 # 1. FLASK APPLICATION SETUP
 # ========================================
 
+
 app = Flask(__name__)
 
 database_url = os.environ.get("DATABASE_URL")
@@ -22,11 +23,11 @@ if database_url:
         )
 
     if database_url.startswith("postgresql://"):
-    database_url = database_url.replace(
-        "postgresql://",
-        "postgresql+psycopg2://",
-        1
-    )
+        database_url = database_url.replace(
+            "postgresql://",
+            "postgresql+psycopg2://",
+            1
+        )
 
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
@@ -36,6 +37,7 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+
 
 
 # ========================================
